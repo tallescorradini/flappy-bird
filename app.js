@@ -14,6 +14,11 @@ function updatePosition(newPosition) {
   bird.style.bottom = newPosition + "px";
 }
 
+function fly() {
+  updatePosition((position += 50));
+}
+document.addEventListener("keyup", fly);
+
 function startGame() {
   updatePosition(applyGravity(position));
 }
