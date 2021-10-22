@@ -2,11 +2,19 @@ const bird = document.querySelector(".bird");
 const gameDisplay = document.querySelector(".game-container");
 const ground = document.querySelector(".ground");
 
-let birdLeft = 220;
-let birdBottom = 100;
+let position = 100;
+let gravity = 2;
+
+function applyGravity(position) {
+  return (position -= gravity);
+}
+
+function updatePosition(newPosition) {
+  position = newPosition;
+  bird.style.bottom = newPosition + "px";
+}
 
 function startGame() {
-  bird.style.bottom = `${birdBottom}px`;
-  bird.style.left = `${birdLeft}px`;
+  updatePosition(applyGravity(position));
 }
-startGame();
+let timerId = setInterval(startGame, 20);
