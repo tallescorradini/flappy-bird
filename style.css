@@ -1,11 +1,11 @@
 .game-container {
-  position: relative;
-
   width: 500px;
   height: 730px;
 }
 
 .sky {
+  position: relative;
+
   width: 500px;
   height: 580px;
   background-color: blue;
