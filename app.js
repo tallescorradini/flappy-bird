@@ -7,6 +7,7 @@ let position = 100;
 let gravity = 2;
 const JUMP_HEIGHT = 50;
 const MAX_FLYING_HEIGHT = sky.offsetHeight - bird.offsetHeight - JUMP_HEIGHT;
+const KEY_CODE_SPACE_BAR = 32;
 
 function applyGravity(position) {
   return (position -= gravity);
@@ -17,11 +18,14 @@ function updatePosition(newPosition) {
   bird.style.bottom = newPosition + "px";
 }
 
+function controls(e) {
+  if (e.keyCode === KEY_CODE_SPACE_BAR) fly();
+}
+
 function fly() {
-  console.log(sky.offsetHeight, bird.offsetHeight);
   if (position < MAX_FLYING_HEIGHT) updatePosition((position += JUMP_HEIGHT));
 }
-document.addEventListener("keyup", fly);
+document.addEventListener("keyup", controls);
 
 function startGame() {
   updatePosition(applyGravity(position));
