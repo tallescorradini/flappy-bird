@@ -23,7 +23,7 @@ function makeScene() {
     if (birdHasCollided) collision = true;
   }
 
-  function getMaxFlyingHeight(birdHeight, jumpHeight) {
+  function _getMaxFlyingHeight(birdHeight, jumpHeight) {
     return SCENE_HEIGHT - (birdHeight + jumpHeight);
   }
 
@@ -56,12 +56,16 @@ function makeScene() {
   }
 
   function controls(e) {
-    if (e.keyCode === KEY_CODE_SPACE_BAR) bird.fly();
+    if (e.keyCode === KEY_CODE_SPACE_BAR) {
+      const birdHeight = bird.getHeight();
+      const birdJumpHeight = bird.getJumpHeight();
+      if (bird.getPosition() < _getMaxFlyingHeight(birdHeight, birdJumpHeight))
+        bird.fly();
+    }
   }
 
   return {
     getBird: () => bird,
-    getMaxFlyingHeight,
     applyGravity,
     insertBird,
     insertObstacle,
@@ -85,8 +89,7 @@ function makeBird() {
   }
 
   function fly() {
-    if (position < scene.getMaxFlyingHeight(BIRD_HEIGHT, JUMP_HEIGHT))
-      updatePosition(position + JUMP_HEIGHT);
+    updatePosition(position + JUMP_HEIGHT);
   }
 
   return {
@@ -94,6 +97,8 @@ function makeBird() {
     getPosition: () => position,
     fly,
     updatePosition,
+    getHeight: () => BIRD_HEIGHT,
+    getJumpHeight: () => JUMP_HEIGHT,
   };
 }
 
