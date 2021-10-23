@@ -47,11 +47,23 @@ function makeScene() {
         obstacle.updatePosition(obstacle.getPosition() + SCENE_SPEED);
       }
 
-      const obstacleHasCollided =
-        obstacle.getPosition() >= 220 - 60 &&
-        obstacle.getPosition() <= 220 + 60 &&
-        bird.getPosition() <= obstacle.getHeight();
-      if (obstacleHasCollided) collision = true;
+      const birdBottom = bird.getPosition();
+      const birdTop = bird.getPosition() + bird.getHeight();
+      const birdLeft = 220;
+      const birdRight = 220 + 60;
+
+      const gapBottom = obstacle.getGap().bottom;
+      const gapTop = obstacle.getGap().bottom + obstacle.getGap().height;
+      const obstacleLeft = obstacle.getPosition();
+      const obstacleRight = obstacle.getPosition() + 60;
+
+      const isOverlapping =
+        birdRight >= obstacleLeft && birdLeft <= obstacleRight;
+      const isInsideGap = birdTop <= gapTop && birdBottom >= gapBottom;
+
+      const birdHasCollided = isOverlapping && !isInsideGap;
+
+      if (birdHasCollided) collision = true;
     });
   }
 
@@ -112,21 +124,42 @@ function makeObstacle() {
   element.setAttribute("id", `obstacle_${uuid}`);
   element.classList.add("obstacle");
 
-  const height = 50 + Math.floor(Math.random() * 250);
-  element.style.height = height + "px";
-
   let position = INITIAL_POSITION;
+
+  const PIPE_HEIGHT_MIN = 20;
+  const PIPE_GAP = 150;
+  const PIPE_HEIGHT_MAX = (580 - PIPE_GAP) / 2;
+
+  const topPipe = document.createElement("div");
+  topPipe.classList.add("top-pipe");
+  element.appendChild(topPipe);
+
+  const topPipeHeight =
+    PIPE_HEIGHT_MIN +
+    Math.floor(Math.random() * (PIPE_HEIGHT_MAX - PIPE_HEIGHT_MIN));
+  topPipe.style.height = topPipeHeight + "px";
+
+  const bottomPipe = document.createElement("div");
+  bottomPipe.classList.add("bottom-pipe");
+  element.appendChild(bottomPipe);
+
+  const bottomPipeHeight = 580 - (topPipeHeight + PIPE_GAP);
+  bottomPipe.style.height = bottomPipeHeight + "px";
 
   function updatePosition(newPosition) {
     position = newPosition;
     element.style.left = newPosition + "px";
   }
 
+  function getGap() {
+    return { bottom: bottomPipeHeight, height: PIPE_GAP };
+  }
+
   return {
     getElement: () => element,
     getPosition: () => position,
     updatePosition,
-    getHeight: () => height,
+    getGap,
   };
 }
 
