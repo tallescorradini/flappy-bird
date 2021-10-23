@@ -56,6 +56,8 @@ function makeScene() {
   }
 
   function controls(e) {
+    if (collision) return;
+
     if (e.keyCode === KEY_CODE_SPACE_BAR) {
       const birdHeight = bird.getHeight();
       const birdJumpHeight = bird.getJumpHeight();
