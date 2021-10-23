@@ -127,8 +127,7 @@ const timers = [];
 const scene = makeScene();
 function setScene() {
   scene.insertBird(makeBird());
-  scene.insertObstacle(makeObstacle());
-  timers.push(setInterval(() => scene.insertObstacle(makeObstacle()), 3000));
+  timers.push(setInterval(() => scene.insertObstacle(makeObstacle()), 2500));
   document.addEventListener("keyup", scene.getControls());
 }
 setScene();
@@ -144,5 +143,6 @@ function updateScene() {
 timers.push(setInterval(updateScene, 20));
 
 function gameOver() {
+  document.removeEventListener("keyup", scene.getControls());
   timers.forEach((timer) => clearInterval(timer));
 }
