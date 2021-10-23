@@ -9,7 +9,7 @@ const KEY_CODE_SPACE_BAR = 32;
 function makeScene() {
   const SCENE_HEIGHT = sky.offsetHeight;
   const GRAVITY = -2;
-  const SCENE_SPEED = -20;
+  const SCENE_SPEED = -2;
   const obstacles = [];
   let bird;
   let collision = false;
@@ -18,6 +18,9 @@ function makeScene() {
     if (!bird) return;
     const newPosition = bird.getPosition() + GRAVITY;
     bird.updatePosition(newPosition);
+
+    const birdHasCollided = bird.getPosition() <= 0;
+    if (birdHasCollided) collision = true;
   }
 
   function getMaxFlyingHeight(birdHeight, jumpHeight) {
@@ -138,7 +141,7 @@ function updateScene() {
   scene.applyGravity();
   scene.startMoving();
 }
-timers.push(setInterval(updateScene, 200));
+timers.push(setInterval(updateScene, 20));
 
 function gameOver() {
   timers.forEach((timer) => clearInterval(timer));
