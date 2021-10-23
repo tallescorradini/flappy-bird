@@ -123,26 +123,31 @@ function makeObstacle() {
   };
 }
 
-const timers = [];
-const scene = makeScene();
-function setScene() {
-  scene.insertBird(makeBird());
-  timers.push(setInterval(() => scene.insertObstacle(makeObstacle()), 2500));
-  document.addEventListener("keyup", scene.getControls());
-}
-setScene();
+function startGame() {
+  const timers = [];
 
-function updateScene() {
-  if (scene.getColision()) {
-    gameOver();
-    return;
+  function gameOver() {
+    document.removeEventListener("keyup", scene.getControls());
+    timers.forEach((timer) => clearInterval(timer));
   }
-  scene.applyGravity();
-  scene.startMoving();
-}
-timers.push(setInterval(updateScene, 20));
 
-function gameOver() {
-  document.removeEventListener("keyup", scene.getControls());
-  timers.forEach((timer) => clearInterval(timer));
+  const scene = makeScene();
+
+  function setScene() {
+    scene.insertBird(makeBird());
+    timers.push(setInterval(() => scene.insertObstacle(makeObstacle()), 2500));
+    document.addEventListener("keyup", scene.getControls());
+  }
+  setScene();
+
+  function updateScene() {
+    if (scene.getColision()) {
+      gameOver();
+      return;
+    }
+    scene.applyGravity();
+    scene.startMoving();
+  }
+  timers.push(setInterval(updateScene, 20));
 }
+startGame();
