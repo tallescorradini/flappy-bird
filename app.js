@@ -9,22 +9,61 @@ const KEY_CODE_SPACE_BAR = 32;
 function makeScene() {
   const SCENE_HEIGHT = sky.offsetHeight;
   const GRAVITY = -2;
+  const SCENE_SPEED = -20;
+  const obstacles = [];
+  let bird;
 
-  function applyGravity(entity) {
-    const entityPosition = entity.getPosition();
-    const newPosition = entityPosition + GRAVITY;
-    entity.updatePosition(newPosition);
+  function applyGravity() {
+    if (!bird) return;
+    const newPosition = bird.getPosition() + GRAVITY;
+    bird.updatePosition(newPosition);
   }
 
   function getMaxFlyingHeight(birdHeight, jumpHeight) {
     return SCENE_HEIGHT - (birdHeight + jumpHeight);
   }
-  return { getMaxFlyingHeight, applyGravity };
+
+  function insertObstacle(obstacle) {
+    sky.appendChild(obstacle.getElement());
+    obstacles.push(obstacle);
+  }
+
+  function insertBird(entity) {
+    sky.appendChild(entity.getElement());
+    bird = entity;
+  }
+
+  function startMoving() {
+    obstacles.forEach((obstacle) => {
+      const obstacleIsOutOfBounds = obstacle.getPosition() < -60;
+
+      if (obstacleIsOutOfBounds) {
+        sky.removeChild(obstacle.getElement());
+        obstacles.shift();
+      } else {
+        obstacle.updatePosition(obstacle.getPosition() + SCENE_SPEED);
+      }
+    });
+  }
+
+  function controls(e) {
+    if (e.keyCode === KEY_CODE_SPACE_BAR) bird.fly();
+  }
+
+  return {
+    getBird: () => bird,
+    getMaxFlyingHeight,
+    applyGravity,
+    insertBird,
+    insertObstacle,
+    startMoving,
+    getControls: () => controls,
+  };
 }
-const scene = makeScene();
 
 function makeBird() {
-  const element = document.querySelector(".bird");
+  const element = document.createElement("div");
+  element.classList.add("bird");
   const INITIAL_POSITION = 100;
   let position = INITIAL_POSITION;
   const BIRD_HEIGHT = 45;
@@ -47,51 +86,48 @@ function makeBird() {
     updatePosition,
   };
 }
-const bird = makeBird();
 
-function controls(e) {
-  if (e.keyCode === KEY_CODE_SPACE_BAR) bird.fly();
-}
+function makeObstacle() {
+  const INITIAL_POSITION = 500;
 
-function updatePositionX(element, position) {
-  element.style.left = position + "px";
-}
-
-document.addEventListener("keyup", controls);
-
-function startGame() {
-  scene.applyGravity(bird);
-}
-let gameTimerId = setInterval(startGame, 200);
-
-const STARTING_POSITION = 500;
-
-function generateObstacle() {
-  const obstacle = document.createElement("div");
-  obstacle.classList.add("obstacle");
-  sky.appendChild(obstacle);
+  const element = document.createElement("div");
+  const uuid = new Date().valueOf().toString();
+  element.setAttribute("id", `obstacle_${uuid}`);
+  element.classList.add("obstacle");
 
   const randomHeight = 50 + Math.floor(Math.random() * 250);
-  obstacle.style.height = randomHeight + "px";
+  element.style.height = randomHeight + "px";
 
-  let xPosition = STARTING_POSITION;
-  updatePositionX(obstacle, xPosition);
+  let position = INITIAL_POSITION;
 
-  function moveObstacle() {
-    xPosition -= 2;
-
-    updatePositionX(obstacle, xPosition);
-
-    if (xPosition < -60) {
-      clearInterval(timerId);
-      sky.removeChild(obstacle);
-    }
+  function updatePosition(newPosition) {
+    position = newPosition;
+    element.style.left = newPosition + "px";
   }
-  let timerId = setInterval(moveObstacle, 20);
 
-  setTimeout(generateObstacle, 3000);
+  return {
+    getElement: () => element,
+    getPosition: () => position,
+    updatePosition,
+  };
 }
-generateObstacle();
+
+const timers = [];
+const scene = makeScene();
+function setScene() {
+  scene.insertBird(makeBird());
+  scene.insertObstacle(makeObstacle());
+  timers.push(setInterval(() => scene.insertObstacle(makeObstacle()), 3000));
+  document.addEventListener("keyup", scene.getControls());
+}
+setScene();
+
+function updateScene() {
+  // scene.detectColision()
+  scene.applyGravity();
+  scene.startMoving();
+}
+let gameTimerId = setInterval(updateScene, 200);
 
 function gameOver() {
   clearInterval(gameTimerId);
