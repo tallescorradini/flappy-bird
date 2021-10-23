@@ -1,6 +1,33 @@
 .game-container {
+  position: relative;
+
+  margin: auto;
+
   width: 500px;
   height: 730px;
+}
+
+.game-container::before,
+.game-container::after {
+  content: "";
+
+  width: 60px;
+  height: 730px;
+
+  position: absolute;
+
+  background-color: white;
+
+  z-index: 999;
+}
+
+.game-container::before {
+  left: -60px;
+}
+
+.game-container::after {
+  top: 0px;
+  right: -60px;
 }
 
 .sky {
