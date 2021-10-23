@@ -48,8 +48,8 @@ function makeScene() {
       }
 
       const obstacleHasCollided =
-        obstacle.getPosition() >= 220 &&
-        obstacle.getPosition() <= 280 &&
+        obstacle.getPosition() >= 220 - 60 &&
+        obstacle.getPosition() <= 220 + 60 &&
         bird.getPosition() <= obstacle.getHeight();
       if (obstacleHasCollided) collision = true;
     });
