@@ -35,13 +35,13 @@
 
   width: 500px;
   height: 580px;
-  background-color: blue;
+  background-image: url("fb-game-background.png");
 }
 
 .ground {
   width: 500px;
   height: 150px;
-  background-color: brown;
+  background-image: url("bottom-background.png");
 }
 
 .bird {
@@ -51,7 +51,7 @@
 
   width: 60px;
   height: 45px;
-  background-color: yellow;
+  background-image: url("flappy-bird.png");
 }
 
 .obstacle {
