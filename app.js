@@ -12,6 +12,7 @@ function makeScene() {
   const SCENE_SPEED = -20;
   const obstacles = [];
   let bird;
+  let collision = false;
 
   function applyGravity() {
     if (!bird) return;
@@ -36,13 +37,18 @@ function makeScene() {
   function startMoving() {
     obstacles.forEach((obstacle) => {
       const obstacleIsOutOfBounds = obstacle.getPosition() < -60;
-
       if (obstacleIsOutOfBounds) {
         sky.removeChild(obstacle.getElement());
         obstacles.shift();
       } else {
         obstacle.updatePosition(obstacle.getPosition() + SCENE_SPEED);
       }
+
+      const obstacleHasCollided =
+        obstacle.getPosition() >= 220 &&
+        obstacle.getPosition() <= 280 &&
+        bird.getPosition() <= obstacle.getHeight();
+      if (obstacleHasCollided) collision = true;
     });
   }
 
@@ -58,6 +64,7 @@ function makeScene() {
     insertObstacle,
     startMoving,
     getControls: () => controls,
+    getColision: () => collision,
   };
 }
 
@@ -95,8 +102,8 @@ function makeObstacle() {
   element.setAttribute("id", `obstacle_${uuid}`);
   element.classList.add("obstacle");
 
-  const randomHeight = 50 + Math.floor(Math.random() * 250);
-  element.style.height = randomHeight + "px";
+  const height = 50 + Math.floor(Math.random() * 250);
+  element.style.height = height + "px";
 
   let position = INITIAL_POSITION;
 
@@ -109,6 +116,7 @@ function makeObstacle() {
     getElement: () => element,
     getPosition: () => position,
     updatePosition,
+    getHeight: () => height,
   };
 }
 
@@ -123,12 +131,15 @@ function setScene() {
 setScene();
 
 function updateScene() {
-  // scene.detectColision()
+  if (scene.getColision()) {
+    gameOver();
+    return;
+  }
   scene.applyGravity();
   scene.startMoving();
 }
-let gameTimerId = setInterval(updateScene, 200);
+timers.push(setInterval(updateScene, 200));
 
 function gameOver() {
-  clearInterval(gameTimerId);
+  timers.forEach((timer) => clearInterval(timer));
 }
